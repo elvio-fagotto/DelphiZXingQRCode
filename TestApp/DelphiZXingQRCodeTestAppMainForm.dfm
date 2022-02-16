@@ -1,9 +1,9 @@
 object Form1: TForm1
-  Left = 0
-  Top = 0
+  Left = 247
+  Top = 144
+  Width = 550
+  Height = 321
   Caption = 'Delphi port of ZXing QRCode'
-  ClientHeight = 282
-  ClientWidth = 534
   Color = clBtnFace
   Constraints.MinHeight = 320
   Constraints.MinWidth = 550
@@ -55,8 +55,13 @@ object Form1: TForm1
     Height = 242
     Anchors = [akLeft, akTop, akRight, akBottom]
     OnPaint = PaintBox1Paint
-    ExplicitWidth = 331
-    ExplicitHeight = 260
+  end
+  object Label5: TLabel
+    Left = 8
+    Top = 117
+    Width = 100
+    Height = 13
+    Caption = 'Error correction level'
   end
   object edtText: TEdit
     Left = 8
@@ -73,6 +78,7 @@ object Form1: TForm1
     Width = 145
     Height = 21
     Style = csDropDownList
+    ItemHeight = 13
     ItemIndex = 0
     TabOrder = 1
     Text = 'Auto'
@@ -93,5 +99,34 @@ object Form1: TForm1
     TabOrder = 2
     Text = '4'
     OnChange = edtQuietZoneChange
+  end
+  object cmbCorrectionError: TComboBox
+    Left = 8
+    Top = 136
+    Width = 145
+    Height = 21
+    Style = csDropDownList
+    ItemHeight = 13
+    ItemIndex = 0
+    TabOrder = 3
+    Text = 'Low'
+    OnChange = cmbEncodingChange
+    Items.Strings = (
+      'Low'
+      'Medium'
+      'Quartil'
+      'High')
+  end
+  object frmStorage: TFormStorage
+    Options = [fpPosition]
+    UseRegistry = False
+    StoredProps.Strings = (
+      'cmbCorrectionError.ItemIndex'
+      'cmbEncoding.ItemIndex'
+      'edtQuietZone.Text'
+      'edtText.Text')
+    StoredValues = <>
+    Left = 16
+    Top = 168
   end
 end

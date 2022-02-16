@@ -54,7 +54,7 @@ type
 implementation
 
 uses
-  contnrs, Math, Classes, System.SysUtils;
+  contnrs, Math, Classes, SysUtils;
 
 type
   TByteArray = array of Byte;
