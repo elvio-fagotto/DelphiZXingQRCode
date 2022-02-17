@@ -18,7 +18,7 @@ type
     Label4: TLabel;
     QRPaintBox: TPaintBox;
     frmStorage: TFormStorage;
-    cmbCorrectionError: TComboBox;
+    cmbErrorCorrection: TComboBox;
     Label5: TLabel;
     dlgSave: TSaveDialog;
     btnSave: TButton;
@@ -29,12 +29,12 @@ type
     Label7: TLabel;
     edtLength: TCurrencyEdit;
     procedure FormDestroy(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure QRPaintBoxPaint(Sender: TObject);
     procedure edtTextChange(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
     procedure FormCanResize(Sender: TObject; var NewWidth,
       NewHeight: Integer; var Resize: Boolean);
+    procedure FormCreate(Sender: TObject);
   private
     QRCodeBitmap: TBitmap;
   public
@@ -138,12 +138,6 @@ begin
   QRUpdate(Sender);
 end;
 
-procedure TfrmMain.FormCreate(Sender: TObject);
-begin
-  QRCodeBitmap := TBitmap.Create;
-  QRUpdate(Sender);
-end;
-
 procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   QRCodeBitmap.Free;
@@ -170,7 +164,7 @@ end;
 
 procedure TfrmMain.QRUpdate(Sender: TObject);
 begin
-  Generate(QRCodeBitmap, edtText.Text, cmbCorrectionError.ItemIndex, cmbEncoding.ItemIndex, StrToIntDef(edtQuietZone.Text, 0));
+  Generate(QRCodeBitmap, edtText.Text, cmbErrorCorrection.ItemIndex, cmbEncoding.ItemIndex, StrToIntDef(edtQuietZone.Text, 0));
   QRPaintBox.Repaint;
 end;
 
@@ -179,7 +173,7 @@ begin
   if(dlgSave.Execute)then
   begin
     QRSaveToFile(PChar(dlgSave.FileName), edtText.Text,
-                 cmbCorrectionError.ItemIndex,
+                 cmbErrorCorrection.ItemIndex,
                  cmbEncoding.ItemIndex,
                  StrToIntDef(edtQuietZone.Text, 0),
                  edtScale.Value);
@@ -191,6 +185,12 @@ procedure TfrmMain.FormCanResize(Sender: TObject; var NewWidth,
 begin
   edtText.SelStart := 0;
   edtText.SelectAll;
+end;
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+  QRCodeBitmap := TBitmap.Create;
+  QRUpdate(Sender);
 end;
 
 end.

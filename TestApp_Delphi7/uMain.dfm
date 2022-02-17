@@ -151,7 +151,7 @@ object frmMain: TfrmMain
       'UTF-8 without BOM'
       'UTF-8 with BOM')
   end
-  object cmbCorrectionError: TComboBox
+  object cmbErrorCorrection: TComboBox
     Left = 152
     Top = 80
     Width = 129
@@ -230,10 +230,9 @@ object frmMain: TfrmMain
     OnChange = edtTextChange
   end
   object frmStorage: TFormStorage
-    Options = [fpPosition]
     UseRegistry = False
     StoredProps.Strings = (
-      'cmbCorrectionError.ItemIndex'
+      'cmbErrorCorrection.ItemIndex'
       'cmbEncoding.ItemIndex'
       'edtText.Text'
       'edtQuietZone.Text'
