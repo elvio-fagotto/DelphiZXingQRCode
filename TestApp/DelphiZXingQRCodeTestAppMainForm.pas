@@ -6,10 +6,9 @@ unit DelphiZXingQRCodeTestAppMainForm;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics,
-  Controls, Forms, Dialogs, DelphiZXingQRCode, ExtCtrls,
-  StdCtrls,
-  rxPlacemnt;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, DelphiZXingQRCode, Vcl.ExtCtrls,
+  Vcl.StdCtrls;
 
 type
   TForm1 = class(TForm)
@@ -21,9 +20,6 @@ type
     edtQuietZone: TEdit;
     Label4: TLabel;
     PaintBox1: TPaintBox;
-    frmStorage: TFormStorage;
-    cmbCorrectionError: TComboBox;
-    Label5: TLabel;
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PaintBox1Paint(Sender: TObject);
@@ -33,7 +29,7 @@ type
   private
     QRCodeBitmap: TBitmap;
   public
-    procedure ImageUpdate;
+    procedure Update;
   end;
 
 var
@@ -45,23 +41,23 @@ implementation
 
 procedure TForm1.cmbEncodingChange(Sender: TObject);
 begin
-  ImageUpdate;
+  Update;
 end;
 
 procedure TForm1.edtQuietZoneChange(Sender: TObject);
 begin
-  ImageUpdate;
+  Update;
 end;
 
 procedure TForm1.edtTextChange(Sender: TObject);
 begin
-  ImageUpdate;
+  Update;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   QRCodeBitmap := TBitmap.Create;
-  ImageUpdate;
+  Update;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -88,20 +84,17 @@ begin
   end;
 end;
 
-procedure TForm1.ImageUpdate;
+procedure TForm1.Update;
 var
   QRCode: TDelphiZXingQRCode;
   Row, Column: Integer;
 begin
   QRCode := TDelphiZXingQRCode.Create;
   try
-    QRCode.ErrorCorrectionLevel := cmbCorrectionError.ItemIndex;
     QRCode.Data := edtText.Text;
     QRCode.Encoding := TQRCodeEncoding(cmbEncoding.ItemIndex);
     QRCode.QuietZone := StrToIntDef(edtQuietZone.Text, 4);
-    //QRCodeBitmap.SetSize(QRCode.Rows, QRCode.Columns);
-    QRCodeBitmap.Height := QRCode.Rows;
-    QRCodeBitmap.Width := QRCode.Columns;
+    QRCodeBitmap.SetSize(QRCode.Rows, QRCode.Columns);
     for Row := 0 to QRCode.Rows - 1 do
     begin
       for Column := 0 to QRCode.Columns - 1 do
