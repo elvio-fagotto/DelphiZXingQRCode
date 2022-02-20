@@ -5,8 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics,
   Controls, Forms, Dialogs, DelphiZXingQRCode, ExtCtrls,
-  StdCtrls, rxPlacemnt, AlignEdit, ComCtrls, Mask, rxToolEdit,
-  rxCurrEdit;
+  StdCtrls, rxPlacemnt, ComCtrls, Mask, rxToolEdit, rxCurrEdit;
 
 type
   TfrmMain = class(TForm)
@@ -28,6 +27,9 @@ type
     edtScale: TCurrencyEdit;
     Label7: TLabel;
     edtLength: TCurrencyEdit;
+    pnl1: TPanel;
+    btnLoad: TButton;
+    dlgOpen: TOpenDialog;
     procedure FormDestroy(Sender: TObject);
     procedure QRPaintBoxPaint(Sender: TObject);
     procedure edtTextChange(Sender: TObject);
@@ -35,6 +37,12 @@ type
     procedure FormCanResize(Sender: TObject; var NewWidth,
       NewHeight: Integer; var Resize: Boolean);
     procedure FormCreate(Sender: TObject);
+    procedure edtScaleKeyPress(Sender: TObject; var Key: Char);
+    procedure btnLoadClick(Sender: TObject);
+    procedure frmStorageRestorePlacement(Sender: TObject);
+    procedure frmStorageSavePlacement(Sender: TObject);
+  protected
+    procedure CMDialogKey(var Message: TCMDialogKey); message CM_DIALOGKEY;
   private
     QRCodeBitmap: TBitmap;
   public
@@ -51,9 +59,30 @@ implementation
 
 {$R *.dfm}
 
+uses
+  IniFiles, WcBase64;
+
 const
   Numeric: Integer      = 7089;
   Alphanumeric: Integer = 4296;
+
+  Data_Text  = 'Text';
+  Data_Param = 'Parameter';
+  Section = 'QRData';
+  Ident_1 = 'Text';
+  Ident_2 = 'EncodingMode';
+  Ident_3 = 'ErrorCorrectionLevel';
+  Ident_4 = 'QuietZone';
+  Ident_5 = 'ScaleImageFile';
+
+
+procedure TfrmMain.CMDialogKey(var Message: TCMDialogKey);
+begin
+  if Message.CharCode=VK_RETURN then
+    Message.CharCode := VK_TAB;
+  inherited;
+end;
+
 
 procedure TfrmMain.Generate(QRBitmap: TBitmap; QRText: WideString; ErrorCorrectionLevel, Encoding, QuietZone: Integer);
 var
@@ -164,19 +193,42 @@ end;
 
 procedure TfrmMain.QRUpdate(Sender: TObject);
 begin
-  Generate(QRCodeBitmap, edtText.Text, cmbErrorCorrection.ItemIndex, cmbEncoding.ItemIndex, StrToIntDef(edtQuietZone.Text, 0));
+  Generate(QRCodeBitmap, edtText.Text, cmbErrorCorrection.ItemIndex, cmbEncoding.ItemIndex, Trunc(edtQuietZone.Value));
   QRPaintBox.Repaint;
 end;
 
 procedure TfrmMain.btnSaveClick(Sender: TObject);
+var
+  fIni: TIniFile;
+  FileFormat: string;
 begin
   if(dlgSave.Execute)then
   begin
-    QRSaveToFile(PChar(dlgSave.FileName), edtText.Text,
-                 cmbErrorCorrection.ItemIndex,
-                 cmbEncoding.ItemIndex,
-                 StrToIntDef(edtQuietZone.Text, 0),
-                 edtScale.Value);
+    FileFormat := ExtractFileExt(dlgSave.FileName);
+    if(FileFormat = '.bmp')then
+    begin
+      QRSaveToFile(PChar(dlgSave.FileName), edtText.Text,
+                   cmbErrorCorrection.ItemIndex,
+                   cmbEncoding.ItemIndex,
+                   Trunc(edtQuietZone.Value),
+                   edtScale.Value);
+      Application.MessageBox('Immagine salvata con successo', 'QRCode', MB_OK or MB_ICONINFORMATION);
+    end else
+    if(FileFormat = '.qr')then
+    begin
+      fIni := TIniFile.Create(dlgSave.FileName);
+      try
+        fIni.WriteString(Section, Ident_1, Base64Encode(edtText.Text));
+        fIni.WriteInteger(Section, Ident_2, cmbEncoding.ItemIndex);
+        fIni.WriteInteger(Section, Ident_3, cmbErrorCorrection.ItemIndex);
+        fIni.WriteFloat(Section, Ident_4, edtQuietZone.Value);
+        fIni.WriteFloat(Section, Ident_5, edtScale.Value);
+      finally
+        fIni.Free;
+      end;
+      Application.MessageBox('Dati salvati con successo', 'QRCode', MB_OK or MB_ICONINFORMATION);
+    end else
+      Application.MessageBox('Formato del file non valido', 'QRCode', MB_OK or MB_ICONERROR);
   end;
 end;
 
@@ -191,6 +243,91 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   QRCodeBitmap := TBitmap.Create;
   QRUpdate(Sender);
+end;
+
+procedure TfrmMain.edtScaleKeyPress(Sender: TObject; var Key: Char);
+begin
+  {
+  if(Key = #13)then
+  begin
+    if(HiWord(GetKeyState(VK_SHIFT)) <> 0)then
+      SelectNext(Sender as TWinControl, False, True)
+    else
+      SelectNext(Sender as TWinControl, True, True);
+    Key := #0;
+    Exit;
+  end;
+  }
+  if(Sender is TCurrencyEdit)then
+  begin
+    if(Key in['.', ','])then
+    begin
+      Key := DecimalSeparator;
+    end;
+  end;
+end;
+
+procedure TfrmMain.btnLoadClick(Sender: TObject);
+var
+  fIni: TIniFile;
+begin
+  if(dlgOpen.Execute)then
+  begin
+    fIni := TIniFile.Create(dlgOpen.FileName);
+    try
+      edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
+      cmbEncoding.ItemIndex := fIni.ReadInteger(Section, Ident_2, 0);
+      cmbErrorCorrection.ItemIndex := fIni.ReadInteger(Section, Ident_3, 0);
+      edtQuietZone.Value := fIni.ReadFloat(Section, Ident_4, 0.0);
+      edtScale.Value := fIni.ReadFloat(Section, Ident_5, 0.0);
+    finally
+      fIni.Free;
+    end;
+  end;
+end;
+
+procedure TfrmMain.frmStorageRestorePlacement(Sender: TObject);
+var
+  fIni: TIniFile;
+begin
+  fIni := TIniFile.Create(frmStorage.IniFileName);
+  try
+    edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
+    cmbEncoding.ItemIndex := fIni.ReadInteger(Section, Ident_2, 0);
+    cmbErrorCorrection.ItemIndex := fIni.ReadInteger(Section, Ident_3, 0);
+    edtQuietZone.Value := fIni.ReadFloat(Section, Ident_4, 0.0);
+    edtScale.Value := fIni.ReadFloat(Section, Ident_5, 0.0);
+  finally
+    fIni.Free;
+  end;
+  {
+  edtText.Text := 'BEGIN:VCARD' + #13#10 +
+                  'VERSION:2.1' + #13#10 +
+                  'N:Fagotto;Elvio;;;' + #13#10 +
+                  'FN:Elvio Fagotto' + #13#10 +
+                  'ORG:EF' + #13#10 +
+                  'ADR:;;Via Villa di Summaga\, 25;Portogruaro;Venezia;30026;Italia' + #13#10 +
+                  'TEL;CELL:+393475943202' + #13#10 +
+                  'EMAIL;INTERNET:elvio.fagotto@gmail.com' + #13#10 +
+                  'TEL:+393475943202' + #13#10 +
+                  'END:VCARD';
+  }
+end;
+
+procedure TfrmMain.frmStorageSavePlacement(Sender: TObject);
+var
+  fIni: TIniFile;
+begin
+  fIni := TIniFile.Create(frmStorage.IniFileName);
+  try
+    fIni.WriteString(Section, Ident_1, Base64Encode(edtText.Text));
+    fIni.WriteInteger(Section, Ident_2, cmbEncoding.ItemIndex);
+    fIni.WriteInteger(Section, Ident_3, cmbErrorCorrection.ItemIndex);
+    fIni.WriteFloat(Section, Ident_4, edtQuietZone.Value);
+    fIni.WriteFloat(Section, Ident_5, edtScale.Value);
+  finally
+    fIni.Free;
+  end;
 end;
 
 end.
