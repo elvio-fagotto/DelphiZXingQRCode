@@ -63,17 +63,17 @@ uses
   IniFiles, WcBase64;
 
 const
-  Numeric: Integer      = 7089;
-  Alphanumeric: Integer = 4296;
+  Numeric      = 7089;
+  Alphanumeric = 4296;
 
-  Data_Text  = 'Text';
-  Data_Param = 'Parameter';
-  Section = 'QRData';
-  Ident_1 = 'Text';
-  Ident_2 = 'EncodingMode';
-  Ident_3 = 'ErrorCorrectionLevel';
-  Ident_4 = 'QuietZone';
-  Ident_5 = 'ScaleImageFile';
+  Data_Text    = 'Text';
+  Data_Param   = 'Parameter';
+  Section      = 'QRData';
+  Ident_1      = 'Text';
+  Ident_2      = 'EncodingMode';
+  Ident_3      = 'ErrorCorrectionLevel';
+  Ident_4      = 'QuietZone';
+  Ident_5      = 'ScaleImageFile';
 
 
 procedure TfrmMain.CMDialogKey(var Message: TCMDialogKey);
@@ -275,11 +275,11 @@ begin
   begin
     fIni := TIniFile.Create(dlgOpen.FileName);
     try
-      edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
       cmbEncoding.ItemIndex := fIni.ReadInteger(Section, Ident_2, 0);
       cmbErrorCorrection.ItemIndex := fIni.ReadInteger(Section, Ident_3, 0);
       edtQuietZone.Value := fIni.ReadFloat(Section, Ident_4, 0.0);
       edtScale.Value := fIni.ReadFloat(Section, Ident_5, 0.0);
+      edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
     finally
       fIni.Free;
     end;
@@ -292,11 +292,11 @@ var
 begin
   fIni := TIniFile.Create(frmStorage.IniFileName);
   try
-    edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
     cmbEncoding.ItemIndex := fIni.ReadInteger(Section, Ident_2, 0);
     cmbErrorCorrection.ItemIndex := fIni.ReadInteger(Section, Ident_3, 0);
     edtQuietZone.Value := fIni.ReadFloat(Section, Ident_4, 0.0);
     edtScale.Value := fIni.ReadFloat(Section, Ident_5, 0.0);
+    edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
   finally
     fIni.Free;
   end;

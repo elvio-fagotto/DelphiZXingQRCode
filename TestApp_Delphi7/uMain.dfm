@@ -1,6 +1,6 @@
 object frmMain: TfrmMain
-  Left = 239
-  Top = 279
+  Left = 422
+  Top = 262
   Width = 550
   Height = 355
   Caption = 'Delphi port of ZXing QRCode'
