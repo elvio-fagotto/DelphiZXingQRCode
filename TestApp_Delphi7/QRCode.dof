@@ -115,7 +115,7 @@ AutoIncBuild=1
 MajorVer=2022
 MinorVer=2
 Release=20
-Build=8
+Build=11
 Debug=0
 PreRelease=0
 Special=0
@@ -126,10 +126,13 @@ CodePage=1252
 [Version Info Keys]
 CompanyName=
 FileDescription=
-FileVersion=2022.2.20.8
+FileVersion=2022.2.20.11
 InternalName=
 LegalCopyright=
 LegalTrademarks=
 OriginalFilename=
 ProductName=
 ProductVersion=2022.2.0.0
+[HistoryLists\hlUnitAliases]
+Count=1
+Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;

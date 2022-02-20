@@ -45,6 +45,7 @@ type
     procedure CMDialogKey(var Message: TCMDialogKey); message CM_DIALOGKEY;
   private
     QRCodeBitmap: TBitmap;
+    AutoRefresh: Boolean;
   public
     procedure Generate(QRBitmap: TBitmap; QRText: WideString; ErrorCorrectionLevel, Encoding, QuietZone: Integer);
     procedure QRUpdate(Sender: TObject);
@@ -193,8 +194,11 @@ end;
 
 procedure TfrmMain.QRUpdate(Sender: TObject);
 begin
-  Generate(QRCodeBitmap, edtText.Text, cmbErrorCorrection.ItemIndex, cmbEncoding.ItemIndex, Trunc(edtQuietZone.Value));
-  QRPaintBox.Repaint;
+  if(AutoRefresh)then
+  begin
+    Generate(QRCodeBitmap, edtText.Text, cmbErrorCorrection.ItemIndex, cmbEncoding.ItemIndex, Trunc(edtQuietZone.Value));
+    QRPaintBox.Repaint;
+  end;
 end;
 
 procedure TfrmMain.btnSaveClick(Sender: TObject);
@@ -241,6 +245,7 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
+  AutoRefresh := False;
   QRCodeBitmap := TBitmap.Create;
   QRUpdate(Sender);
 end;
@@ -273,6 +278,7 @@ var
 begin
   if(dlgOpen.Execute)then
   begin
+    AutoRefresh := False;
     fIni := TIniFile.Create(dlgOpen.FileName);
     try
       cmbEncoding.ItemIndex := fIni.ReadInteger(Section, Ident_2, 0);
@@ -282,6 +288,8 @@ begin
       edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
     finally
       fIni.Free;
+      AutoRefresh := True;
+      QRUpdate(Sender);
     end;
   end;
 end;
@@ -290,6 +298,7 @@ procedure TfrmMain.frmStorageRestorePlacement(Sender: TObject);
 var
   fIni: TIniFile;
 begin
+  AutoRefresh := False;
   fIni := TIniFile.Create(frmStorage.IniFileName);
   try
     cmbEncoding.ItemIndex := fIni.ReadInteger(Section, Ident_2, 0);
@@ -299,6 +308,8 @@ begin
     edtText.Text := Base64Decode(fIni.ReadString(Section, Ident_1, ''));
   finally
     fIni.Free;
+    AutoRefresh := True;
+    QRUpdate(Sender);
   end;
   {
   edtText.Text := 'BEGIN:VCARD' + #13#10 +

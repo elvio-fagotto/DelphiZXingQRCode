@@ -1,8 +1,8 @@
 object frmMain: TfrmMain
-  Left = 422
-  Top = 262
+  Left = 270
+  Top = 231
   Width = 550
-  Height = 355
+  Height = 357
   Caption = 'Delphi port of ZXing QRCode'
   Color = clBtnFace
   Constraints.MinHeight = 355
@@ -19,7 +19,7 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   DesignSize = (
     534
-    316)
+    318)
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -188,7 +188,7 @@ object frmMain: TfrmMain
   end
   object btnSave: TButton
     Left = 8
-    Top = 255
+    Top = 257
     Width = 75
     Height = 35
     Anchors = [akLeft, akBottom]
@@ -204,7 +204,7 @@ object frmMain: TfrmMain
   end
   object stat1: TStatusBar
     Left = 0
-    Top = 297
+    Top = 299
     Width = 534
     Height = 19
     Panels = <>
@@ -225,7 +225,6 @@ object frmMain: TfrmMain
     MaxValue = 99.000000000000000000
     ParentFont = False
     TabOrder = 4
-    Value = 4.000000000000000000
     OnChange = edtTextChange
     OnKeyPress = edtScaleKeyPress
   end
@@ -272,7 +271,7 @@ object frmMain: TfrmMain
     Left = 296
     Top = 67
     Width = 225
-    Height = 225
+    Height = 227
     Anchors = [akLeft, akTop, akRight, akBottom]
     BevelInner = bvRaised
     BevelOuter = bvNone
@@ -282,7 +281,7 @@ object frmMain: TfrmMain
       Left = 1
       Top = 1
       Width = 219
-      Height = 219
+      Height = 221
       Align = alClient
       Color = clBtnFace
       ParentColor = False
@@ -291,7 +290,7 @@ object frmMain: TfrmMain
   end
   object btnLoad: TButton
     Left = 88
-    Top = 255
+    Top = 257
     Width = 75
     Height = 35
     Anchors = [akLeft, akBottom]
